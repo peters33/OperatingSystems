@@ -52,10 +52,6 @@ int main (int argc, char *argv[])
 		{
 			//RUN THE "command" figure out how to get
 			// argument list
-			const char* program = "testsim";
-			char* args[2];
-			args[0] = "1";
-			args[1] = "3";
 			//execvp(program,args);
 			system(command);
 			return 0;
