@@ -112,7 +112,8 @@ void modifyAdd(char* varStr) {
 		var = strtok(NULL, ",");
 	}
 	
-	varArray = (char**) calloc(i+1,2);					// Can have at most i elements
+	varArray = (char**) calloc(i+1,4);					
+
 	for(int j = 0; j < i; j++)							
     {    
 		name = strtok(assign[j],"=");					// Extract name and value from each var
