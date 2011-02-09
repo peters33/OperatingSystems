@@ -25,6 +25,9 @@ int main (int argc, char *argv[])
 		{
 			//TODO: Implement waiting stuff
 			// Decrement count
+			fprintf(stderr, "Reached the limit, pr_count=%i, pr_limit=%i \n", pr_count, pr_limit);
+			wait(NULL);
+			pr_count--;
 		}
 		
 		inFile.getline (command, 256);
