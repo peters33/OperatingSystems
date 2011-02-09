@@ -56,7 +56,7 @@ int main(int argc, char * argv[])
         	    {
                     var = strtok(assign[j], "=");
                     val = strtok(NULL, "");
-                    cout << var << " " << val <<endl;
+                    //cout << var << " " << val <<endl;
                     setVariable(var,val);
                 }
                 else
@@ -160,7 +160,7 @@ bool setVariable(char* var, char* value)
 	strcat(str,"=");
 	strcat(str,value);
 
-	cout << "Calling putenv with " << str << endl;
+	//cout << "Calling putenv with " << str << endl;
 
 	//IF IT FAILS
 	if(putenv(str) != 0)
@@ -172,7 +172,7 @@ bool setVariable(char* var, char* value)
 
 	//DISPLAY THE NEW ONE
 	value = getVariable(var);
-	cout << endl << "Result: " << var << "=" << value << endl;	
+	cout << var << "=" << value << endl;	
 	return true;
 }
 
