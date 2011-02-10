@@ -16,10 +16,14 @@ int main (int argc, char *argv[])
 	
 	for(int i = 0; i < loops; i++)
 	{
-		fprintf(stderr, "Start Sleep");
+		// Output command line, process ID, parent process ID, and iteration
+		fprintf(stderr, "testsim %s %s: ", argv[1], argv[2]);
+		fprintf(stderr, "Process ID=%i, Parent Process ID=%i, Sleep iteration=%i\n", getpid(), getppid(), i+1);
 		sleep(sleeptime);
-		fprintf(stderr, "End Sleep");		
 	}
+
+	// Indicates a process has completed
+	fprintf(stderr, "testsim %s %s terminating...\n", argv[1], argv[2]);
 
 	return 0;
 }
