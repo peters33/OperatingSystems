@@ -18,7 +18,7 @@ int main (int argc, char *argv[])
 	for(int i = 0; i < loops; i++)
 	{	
 		// Output command line, process ID, parent process ID, and iteration
-		fprintf(stderr, "Process ID=%i, Parent Process ID=%i, Sleep iteration=%i\n", getpid(), getppid(), i+1);
+		fprintf(stderr, "Process ID=%ld, Parent Process ID=%ld, Sleep iteration=%d\n", (long)getpid(), (long)getppid(), i+1);
 		sleep(sleeptime);
 	}
 
