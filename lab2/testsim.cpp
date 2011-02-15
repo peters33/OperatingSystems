@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+using namespace std;
+
 int main (int argc, char *argv[]) 
 {
 	if (argc != 3)
@@ -14,11 +16,12 @@ int main (int argc, char *argv[])
 	int sleeptime = atoi(argv[1]);
 	int loops = atoi(argv[2]);
 	
+	fprintf(stderr, "testsim %d %d starting...\n", sleeptime, loops);
 	
 	for(int i = 0; i < loops; i++)
 	{	
 		// Output command line, process ID, parent process ID, and iteration
-		fprintf(stderr, "Process ID=%ld, Parent Process ID=%ld, Sleep iteration=%d\n", (long)getpid(), (long)getppid(), i+1);
+		fprintf(stderr, "Process ID=%li, Parent Process ID=%li, Sleep iteration=%i\n", (long)getpid(), (long)getppid(), i+1);
 		sleep(sleeptime);
 	}
 
