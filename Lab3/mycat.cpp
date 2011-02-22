@@ -7,21 +7,39 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	ifstream inFile;
-	char* filename;
+	fstream fileStr;
+	int lineNum = 1;
+	char buffer[50];
+	char* str;
+	bool isNumbered = false;
 	
-	for (int i = 1; i < argc; i++)						// Iterate through all command line args
+	// Iterate through all command line args
+	for (int i = 1; i < argc; i++)
 	{
+		fileStr.clear();
+		str = argv[i];
 		
-		inFile.open(argv[i]);
-		if (!inFile)
-		{
-			cerr << "Unable to open ";
-			cerr << argv[i];
-			exit(1);
+		if (strcmp(str,"-n") == 0) {
+			isNumbered = true;
+			
+		} else {
+			fileStr.open(argv[i]);
+			
+			if (fileStr.fail()) {
+				// open failed, output error message
+				fileStr.clear();
+				
+			} else {
+				// ****************** Begin Read File **********************
+				while (!fileStr.eof()) {
+					fileStr.getline(buffer, sizeof(buffer));
+					cout << buffer << endl; // Temporary
+				}
+				
+				// ****************** End Read File ************************
+			}
+			fileStr.close();
 		}
-		
-		inFile.close();
 	}
 	return 0;
 }
