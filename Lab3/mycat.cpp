@@ -8,18 +8,16 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	fstream fileStr;
-	int lineNum = 1;
+	int lineNum;
 	char buffer[50];
-	char* str;
 	bool isNumbered = false;
 	
 	// Iterate through all command line args
 	for (int i = 1; i < argc; i++)
 	{
 		fileStr.clear();
-		str = argv[i];
 		
-		if (strcmp(str,"-n") == 0) {
+		if (strcmp(argv[i],"-n") == 0) {
 			isNumbered = true;
 			
 		} else {
@@ -30,12 +28,19 @@ int main(int argc, char *argv[])
 				fileStr.clear();
 				
 			} else {
+				lineNum = 1;
+				
 				// ****************** Begin Read File **********************
 				while (!fileStr.eof()) {
 					fileStr.getline(buffer, sizeof(buffer));
-					cout << buffer << endl; // Temporary
+					
+					if (isNumbered) {
+						printf("%i\t%s\n", lineNum, buffer);
+						lineNum++;
+					} else {
+						printf("%s\n", buffer);
+					}
 				}
-				
 				// ****************** End Read File ************************
 			}
 			fileStr.close();
