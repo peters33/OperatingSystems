@@ -17,7 +17,7 @@ using namespace std;
 
 */ 
 void GetFileStream(char* filename, bool numbered);
-//void GetStandarInput();
+void GetStandarInput();
 void CopyInputToOutputStream(char* outputStreamName);
 
 string inputString;
@@ -29,13 +29,14 @@ int main(int argc, char *argv[])
 	char buffer[50];
 	bool isNumbered = false;
 	char* outputFile = "standard";
-	inputString = "Test input bla bla bla";
+	inputString = "";
 
 	if (argc == 3 && (strcmp(argv[1],"@") == 0))
 	{
-		//WE HAVE A SPECIAL BLANK SCENARIO
-		// cat > outputfile.txt
-		// aka mycat @ outfile.txt
+		GetStandarInput();
+		outputFile = argv[2];
+		CopyInputToOutputStream(outputFile);
+		return 0;
 	}
 
 	// Iterate through all command line args
@@ -83,12 +84,16 @@ void GetFileStream(char* filename, bool numbered)
 
 		// ****************** Begin Read File **********************
 		while (!fileStr.eof()) {
+			string strLine = "";
+			getline(fileStr,strLine);
+
 			if (numbered)
 			{
-				inputString += lineNum;
+				strLine += lineNum;
 				lineNum++;
-			}			
-			getline(fileStr,inputString);
+			}
+
+			inputString += strLine;
 			
 			//fileStr.getline(buffer, sizeof(buffer));
 			//if (isNumbered) {
@@ -123,6 +128,7 @@ void CopyInputToOutputStream(char* outputStream)
 		{
 			// open failed, output error message
 			fileStr.clear();
+			cout << inputString;
 		}
 
 		fileStr << inputString;
@@ -130,11 +136,12 @@ void CopyInputToOutputStream(char* outputStream)
 	}
 }
 
-//void GetStandarInput()
-//{
-//	Add standard input until ctrl-D
-//		Loop Get-Line Calls until control D is found
-//}
+void GetStandarInput()
+{
+	inputString = "This is hardcoded standard input";
+	//Add standard input until ctrl-D
+		//Loop Get-Line Calls until control D is found
+}
 
 
 
