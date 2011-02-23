@@ -17,7 +17,7 @@ using namespace std;
 
 */ 
 void GetFileStream(char* filename, bool numbered);
-void GetStandarInput();
+void GetStandardInput();
 void CopyInputToOutputStream(char* outputStreamName);
 
 string inputString;
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
 	if (argc == 3 && (strcmp(argv[1],"@") == 0))
 	{
-		GetStandarInput();
+		GetStandardInput();
 		outputFile = argv[2];
 		CopyInputToOutputStream(outputFile);
 		return 0;
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 		// -
 		if (strcmp(argv[i],"-") == 0)
 		{
-			//GetStandarInput();
+			GetStandardInput();
 		}
 		// @ outputfilename
 		if (strcmp(argv[i],"@") == 0)
@@ -136,11 +136,20 @@ void CopyInputToOutputStream(char* outputStream)
 	}
 }
 
-void GetStandarInput()
+void GetStandardInput()
 {
-	inputString = "This is hardcoded standard input";
+	//inputString = "This is hardcoded standard input";
 	//Add standard input until ctrl-D
 		//Loop Get-Line Calls until control D is found
+	char* val;
+	
+	do {
+		gets(val);
+		if (strchr(val, 4) == NULL) {
+			break;
+		}
+		inputString += val;
+	} while(1);
 }
 
 
