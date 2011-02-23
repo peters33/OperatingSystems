@@ -140,16 +140,12 @@ void GetStandardInput()
 {
 	//inputString = "This is hardcoded standard input";
 	//Add standard input until ctrl-D
-		//Loop Get-Line Calls until control D is found
-	char* val;
+	//Loop getting strings until control D is found
+	char buffer[1024];
 	
-	do {
-		gets(val);
-		if (strchr(val, 4) == NULL) {
-			break;
-		}
-		inputString += val;
-	} while(1);
+	while (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+		inputString += buffer;
+	}
 }
 
 
