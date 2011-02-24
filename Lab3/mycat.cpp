@@ -22,7 +22,6 @@ void CopyInputToOutputStream(char* outputStreamName);
 
 string inputString;
 fstream fileStr;
-FILE * newFile;
 
 int main(int argc, char *argv[])
 {	
@@ -116,22 +115,25 @@ void CopyInputToOutputStream(char* outputStream)
 	/* Create an fstream based on the output file name
 	and copy the all the stored input to the output fstream
 	*/
-
-	fileStr.clear();
-	fileStr.open(outputStream);
-
-	if (outputStream != "standard") 
+	if (strcmp(outputStream,"standard") == 0)
 	{
-       newFile = fopen(outputStream, "w");
-       fputs(inputString.c_str(), newFile);
-       fclose(newFile);
+		cout << inputString;
 	}
-    else
-    { 
-     cout << inputString << endl;
- 	 fileStr.close();
-    }
+	else
+	{
+		fileStr.clear();
+		fileStr.open(outputStream);
 
+		if (fileStr.fail()) 
+		{
+			// open failed, output error message
+			fileStr.clear();
+			cout << inputString;
+		}
+
+		fileStr << inputString;
+		fileStr.close();
+	}
 }
 
 void GetStandardInput()
@@ -142,10 +144,9 @@ void GetStandardInput()
 	char buffer[1024];
 	
 	while (fgets(buffer, sizeof(buffer), stdin) != NULL) {
-        inputString += buffer;
+		inputString += buffer;
 	}
 }
-
 
 
 
