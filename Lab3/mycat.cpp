@@ -17,11 +17,12 @@ using namespace std;
 
 */ 
 void GetFileStream(char* filename, bool numbered);
-void GetStandarInput();
+void GetStandardInput();
 void CopyInputToOutputStream(char* outputStreamName);
 
 string inputString;
 fstream fileStr;
+FILE * newFile;
 
 int main(int argc, char *argv[])
 {	
@@ -33,7 +34,7 @@ int main(int argc, char *argv[])
 
 	if (argc == 3 && (strcmp(argv[1],"@") == 0))
 	{
-		GetStandarInput();
+		GetStandardInput();
 		outputFile = argv[2];
 		CopyInputToOutputStream(outputFile);
 		return 0;
@@ -52,7 +53,7 @@ int main(int argc, char *argv[])
 		// -
 		if (strcmp(argv[i],"-") == 0)
 		{
-			//GetStandarInput();
+			GetStandardInput();
 		}
 		// @ outputfilename
 		if (strcmp(argv[i],"@") == 0)
@@ -115,33 +116,36 @@ void CopyInputToOutputStream(char* outputStream)
 	/* Create an fstream based on the output file name
 	and copy the all the stored input to the output fstream
 	*/
-	if (strcmp(outputStream,"standard") == 0)
-	{
-		cout << inputString;
-	}
-	else
-	{
-		fileStr.clear();
-		fileStr.open(outputStream);
 
-		if (fileStr.fail()) 
-		{
-			// open failed, output error message
-			fileStr.clear();
-			cout << inputString;
-		}
+	fileStr.clear();
+	fileStr.open(outputStream);
 
-		fileStr << inputString;
-		fileStr.close();
+	if (outputStream != "standard") 
+	{
+       newFile = fopen(outputStream, "w");
+       fputs(inputString.c_str(), newFile);
+       fclose(newFile);
 	}
+    else
+    { 
+     cout << inputString << endl;
+ 	 fileStr.close();
+    }
+
 }
 
-void GetStandarInput()
+void GetStandardInput()
 {
-	inputString = "This is hardcoded standard input";
+	//inputString = "This is hardcoded standard input";
 	//Add standard input until ctrl-D
-		//Loop Get-Line Calls until control D is found
+	//Loop getting strings until control D is found
+	char buffer[1024];
+	
+	while (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+        inputString += buffer;
+	}
 }
+
 
 
 
