@@ -9,7 +9,6 @@
 #include <sys/stat.h>
 #include "restart.h"
 #include "restart.c"
-#define FIFOARG 1
 
 int main (int argc, char *argv[]) {
 	time_t curtime;
@@ -22,7 +21,7 @@ int main (int argc, char *argv[]) {
 		return 1; 
 	}
 
-	if ((requestfd = open(argv[FIFOARG], O_WRONLY)) == -1) {
+	if ((requestfd = open(argv[1], O_WRONLY)) == -1) {
 		perror("Client failed to open log fifo for writing");
 		return 1; 
 	}

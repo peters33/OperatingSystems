@@ -9,55 +9,58 @@
 #define FIFO_PERMS (S_IRWXU | S_IWGRP| S_IWOTH)
 
 int main (int argc, char *argv[]) {
+	FILE* pipe = NULL;
 	int requestfd;
 	int releasefd;
-	char* requestPath;
-	char* releasePath;
+	char reqPath[1024];
+	char relPath[1024];
 	int i;
-	int bytesRead;
+	int x;
+	int n = atoi(argv[2]);
+	char buffer[n];
 	
 	if (argc != 3) {
 		fprintf(stderr, "Usage: %s [barrier name] [barrier size]\n", argv[0]);
 		return 1; 
 	}
 	
-	int barrierSize = atoi(argv[2]);
-	char buffer[barrierSize];
+	strcpy(reqPath, argv[1]);
+	strcat(reqPath, ".request");
 	
-	strcpy(requestPath, argv[1]);
-	strcat(requestPath, ".request");
+	strcpy(relPath, argv[1]);
+	strcat(relPath, ".release");
 	
-	strcpy(releasePath, argv[1]);
-	strcat(releasePath, ".release");
-	
-	
-	/* create a named pipe to handle incoming requests */
-	if ((mkfifo(requestPath, FIFO_PERMS) == -1) && (errno != EEXIST)) {
+	// create a named pipe to handle incoming requests
+	if ((mkfifo(reqPath, FIFO_PERMS) == -1) && (errno != EEXIST)) {
 		perror("Server failed to create a FIFO");
 		return 1; 
 	}
 	
-	/* create a named pipe to handle writing requests */
-	if ((mkfifo(releasePath, FIFO_PERMS) == -1) && (errno != EEXIST)) {
+	// create a named pipe to handle writing requests
+	if ((mkfifo(relPath, FIFO_PERMS) == -1) && (errno != EEXIST)) {
 		perror("Server failed to create a FIFO");
 		return 1;
 	}
 	
-	/* server loops twice */
+	// server loops twice 
 	for (i = 0; i < 2; i++) {
+		fprintf(stderr, "Iteration #%d\n", i + 1);
 	
-		/* open a read/write communication endpoint to the pipe */
-		if ((requestfd = open(requestPath, O_RDWR)) == -1) {
+		// open a read/write communication endpoint to the pipe
+		fprintf(stderr, "Server opening %s\n", reqPath); 
+		if (!(pipe = fopen(reqPath, "r"))) {
 			perror("Server failed to open its FIFO");
 			return 1;
 		}
 		
-		if ((bytesRead = read(requestfd, buffer, sizeof(buffer)) == 0)
-			perror("Server faile to read FIFO");
-			return 1;
+		fprintf(stderr, "Server reading from %s\n", reqPath); 
+		for (x = 0; x < n; x++) {
+			buffer[x] = fgetc(pipe);
 		}
-	}	
-	
-	//copyfile(requestfd, STDOUT_FILENO); 
-	return 1; 
+		fprintf(stderr, "Server read successfully from %s\n", reqPath);
+		
+		fprintf(stderr, "Server closing %s\n", reqPath);
+		fclose(pipe);
+	}
+	return 0; 
 }

@@ -128,9 +128,7 @@ ssize_t readblock(int fd, void *buf, size_t size) {
    size_t bytestoread;
    size_t totalbytes;
  
-   for (bufp = buf, bytestoread = size, totalbytes = 0;
-        bytestoread > 0;
-        bufp += bytesread, bytestoread -= bytesread) {
+   for (bufp = buf, bytestoread = size, totalbytes = 0; bytestoread > 0; bufp += bytesread, bytestoread -= bytesread) {
       bytesread = read(fd, bufp, bytestoread);
       if ((bytesread == 0) && (totalbytes == 0))
          return 0;
