@@ -49,17 +49,40 @@ int main (int argc, char *argv[]) {
 		// open a read/write communication endpoint to the pipe
 		fprintf(stderr, "Server opening %s\n", reqPath); 
 		if (!(pipe = fopen(reqPath, "r"))) {
-			perror("Server failed to open its FIFO");
+			perror("Server failed to open its request FIFO");
 			return 1;
 		}
 		
 		fprintf(stderr, "Server reading from %s\n", reqPath); 
 		for (x = 0; x < n; x++) {
-			buffer[x] = fgetc(pipe);
+			
+			if ((buffer[x] = fgetc(pipe)) == EOF) {
+				perror("Sever failed to read character\n");
+				return 1;
+			}
 		}
-		fprintf(stderr, "Server read successfully from %s\n", reqPath);
+		fprintf(stderr, "Server read successfully from pipe\n");
 		
 		fprintf(stderr, "Server closing %s\n", reqPath);
+		fclose(pipe);
+		
+		fprintf(stderr, "Server opening %s\n", relPath);
+		if (!(pipe = fopen(relPath, "r+"))) {
+			perror("Server failed to open its release FIFO");
+			return 1;
+		}
+		
+		fprintf(stderr, "Server writing to %s\n", relPath); 
+		for (x = 0; x < n; x++) {
+		
+			if (fputc(buffer[x],pipe) == EOF) {
+				perror("Server failed to write character\n");
+				return 1;
+			} 
+		}
+		fprintf(stderr, "Server wrote successfully to pipe\n");
+		
+		fprintf(stderr, "Server closing %s\n", relPath);
 		fclose(pipe);
 	}
 	return 0; 
