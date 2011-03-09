@@ -10,10 +10,8 @@
 
 int main (int argc, char *argv[]) {
 	FILE* pipe = NULL;
-	int requestfd;
-	int releasefd;
-	char reqPath[1024];
-	char relPath[1024];
+	char reqName[1024];
+	char relName[1024];
 	int i;
 	int x;
 	int n = atoi(argv[2]);
@@ -24,21 +22,21 @@ int main (int argc, char *argv[]) {
 		return 1; 
 	}
 	
-	strcpy(reqPath, argv[1]);
-	strcat(reqPath, ".request");
+	strcpy(reqName, argv[1]);
+	strcat(reqName, ".request");
 	
-	strcpy(relPath, argv[1]);
-	strcat(relPath, ".release");
+	strcpy(relName, argv[1]);
+	strcat(relName, ".release");
 	
 	// create a named pipe to handle incoming requests
-	if ((mkfifo(reqPath, FIFO_PERMS) == -1) && (errno != EEXIST)) {
-		perror("Server failed to create a FIFO");
+	if ((mkfifo(reqName, FIFO_PERMS) == -1) && (errno != EEXIST)) {
+		perror("Server failed to create a FIFO\n");
 		return 1; 
 	}
 	
 	// create a named pipe to handle writing requests
-	if ((mkfifo(relPath, FIFO_PERMS) == -1) && (errno != EEXIST)) {
-		perror("Server failed to create a FIFO");
+	if ((mkfifo(relName, FIFO_PERMS) == -1) && (errno != EEXIST)) {
+		perror("Server failed to create a FIFO\n");
 		return 1;
 	}
 	
@@ -47,13 +45,13 @@ int main (int argc, char *argv[]) {
 		fprintf(stderr, "Iteration #%d\n", i + 1);
 	
 		// open a read/write communication endpoint to the pipe
-		fprintf(stderr, "Server opening %s\n", reqPath); 
-		if (!(pipe = fopen(reqPath, "r"))) {
-			perror("Server failed to open its request FIFO");
+		fprintf(stderr, "Server opening %s\n", reqName); 
+		if (!(pipe = fopen(reqName, "r"))) {
+			perror("Server failed to open its request FIFO\n");
 			return 1;
 		}
 		
-		fprintf(stderr, "Server reading from %s\n", reqPath); 
+		fprintf(stderr, "Server reading from %s\n", reqName); 
 		for (x = 0; x < n; x++) {
 			
 			if ((buffer[x] = fgetc(pipe)) == EOF) {
@@ -63,16 +61,16 @@ int main (int argc, char *argv[]) {
 		}
 		fprintf(stderr, "Server read successfully from pipe\n");
 		
-		fprintf(stderr, "Server closing %s\n", reqPath);
+		fprintf(stderr, "Server closing %s\n", reqName);
 		fclose(pipe);
 		
-		fprintf(stderr, "Server opening %s\n", relPath);
-		if (!(pipe = fopen(relPath, "r+"))) {
-			perror("Server failed to open its release FIFO");
+		fprintf(stderr, "Server opening %s\n", relName);
+		if (!(pipe = fopen(relName, "r+"))) {
+			perror("Server failed to open its release FIFO\n");
 			return 1;
 		}
 		
-		fprintf(stderr, "Server writing to %s\n", relPath); 
+		fprintf(stderr, "Server writing to %s\n", relName); 
 		for (x = 0; x < n; x++) {
 		
 			if (fputc(buffer[x],pipe) == EOF) {
@@ -82,8 +80,18 @@ int main (int argc, char *argv[]) {
 		}
 		fprintf(stderr, "Server wrote successfully to pipe\n");
 		
-		fprintf(stderr, "Server closing %s\n", relPath);
+		fprintf(stderr, "Server closing %s\n", relName);
 		fclose(pipe);
 	}
+	
+	if (unlink(relName) == -1) {
+		perror("Failed to remove FIFO\n");
+	}
+	
+	if (unlink(reqName) == -1) {
+		perror("Failed to remove FIFO\n");
+	}
+	
+	fprintf(stderr, "FIFOs removed, server closing\n");
 	return 0; 
 }
