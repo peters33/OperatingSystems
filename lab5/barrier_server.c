@@ -8,6 +8,8 @@
 #include "restart.c"
 #define FIFO_PERMS (S_IRWXU | S_IWGRP| S_IWOTH)
 
+// Updated: March 9, 2011
+
 int main (int argc, char *argv[]) {
 	FILE* pipe = NULL;
 	char reqName[1024];
