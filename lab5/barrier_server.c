@@ -66,24 +66,25 @@ int main (int argc, char *argv[]) {
 		fprintf(stderr, "Server closing %s\n", reqName);
 		fclose(pipe);
 		
+		pipe = NULL;
+		
 		fprintf(stderr, "Server opening %s\n", relName);
-		if (!(pipe = fopen(relName, "r+"))) {
+		if (!(pipe = fopen(relName, "w"))) {
 			perror("Server failed to open its release FIFO\n");
 			return 1;
 		}
 		
 		fprintf(stderr, "Server writing to %s\n", relName); 
 		for (x = 0; x < n; x++) {
-		
-			if (fputc(buffer[x],pipe) == EOF) {
-				perror("Server failed to write character\n");
-				return 1;
-			} 
+			
+			fprintf(pipe,"%c",buffer[x]);
 		}
 		fprintf(stderr, "Server wrote successfully to pipe\n");
 		
 		fprintf(stderr, "Server closing %s\n", relName);
 		fclose(pipe);
+		
+		pipe = NULL;
 	}
 	
 	if (unlink(relName) == -1) {
