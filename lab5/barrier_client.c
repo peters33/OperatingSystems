@@ -33,7 +33,7 @@ int main (int argc, char *argv[]) {
 	
 	strcpy(relName, argv[1]);
 	strcat(relName, ".release");
-	
+	printf("here");
 	// server loops twice 
 	for (i = 0; i < 2; i++) {
 		fprintf(stderr, "Client %d Iteration #%d\n", getpid(), i + 1);

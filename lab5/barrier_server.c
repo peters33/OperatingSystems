@@ -18,7 +18,7 @@ int main (int argc, char *argv[]) {
 	int x;
 	int n = atoi(argv[2]);
 	char buffer[n];
-	
+	printf("HERE I AM!");
 	if (argc != 3) {
 		fprintf(stderr, "Usage: %s [barrier name] [barrier size]\n", argv[0]);
 		return 1; 
