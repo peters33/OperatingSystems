@@ -16,8 +16,8 @@ int main (int argc, char *argv[])
 		fprintf(stderr, "Usage: %s Source Destination\n", argv[0]);
 		return 1;
 	}
-	printf("Directory Scan of %s\n",argv[1]);
-	printdir(argv[1],5);
+	printf("Copying %s to %s...\n",argv[1],argv[2]);
+	CopyDirectory(argv[1],argv[2]);
 
 	return 0;
 }

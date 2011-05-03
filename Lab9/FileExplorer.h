@@ -7,8 +7,10 @@
 #include <limits.h>
 #include <errno.h>
 
-void printdir(char *dir, int depth);
+void printdir(char*, int);
+int CopyDirectory(char*, char*); 
 int ShowDirectory(char*, int, int);
 int IsDirectory(char*);
 int IsLink(char*);
 int IsFile(char*);
+void *copyfilepass(void *arg);
