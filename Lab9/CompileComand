@@ -1,0 +1,1 @@
+gcc -Wall restart.c Lab9Functions.c -o copy -lpthread

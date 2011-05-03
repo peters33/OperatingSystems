@@ -23,25 +23,17 @@ int main (int argc, char *argv[])
 	
 	
 	//DO I NEED TO DO THIS???
-	execl("barrier_server", argv[1], argv[1], '2', NULL);
 	
-	for (i = 1; i < n; i++)
+	for (i = 0; i < n; i++)
 	{
-		childpid = fork();
-		if(childpid == -1)
-		{
-			printf("Failed to fork process.\n");
-			return 0;
-		}
+		pid_t childpid = fork();
+		char command[1024];
 		
 		if (childpid == 0)
 		{
-		//THIS ISN"T WORKING VERY WELL EITHER
-			//char* command = "barrier_client runserver"; 
-			//execute the client
-			//system(command);
-			execl("barrier_client", argv[1], argv[1], NULL );
-			return 0;
+			sprintf(command,"barrier_client %s", argv[1]);
+			//execl("barrier_client", argv[1], argv[1], NULL );
+			system(command);
 		}		
 	}
 	return 0;

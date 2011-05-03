@@ -108,8 +108,7 @@ thread or process. If a signal handler is called, the raise()
 function shall not return until after the signal handler does.    
 
 
-
-
+A program with an exit handler that outputs CPU usage.
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -127,20 +126,14 @@ fprintf(stderr, "User time: %8.3f seconds\n",
 tinfo.tms_utime/ticks);
 fprintf(stderr, "System time: %8.3f seconds\n",
 tinfo.tms_stime/ticks);
-fprintf(stderr, "Children's user time: %8.3f seconds\n",
-tinfo.tms_cutime/ticks);
-fprintf(stderr, "Children's system time: %8.3f seconds\n",
-tinfo.tms_cstime/ticks);
-}
-}
-int main(void) {
-if (atexit(showtimes)) {
-fprintf(stderr, "Failed to install showtimes exit handler\n");
-return 1;
-}
-/* rest of main program goes here */
-return 0;
-}
+
+The C atexit function installs a user-defined exit handler. Exit handlers are executed on a lastinstalled-
+first-executed order when the program returns from main or calls exit. Use multiple
+calls to atexit to install several handlers. The atexit function takes a single parameter, the
+function to be executed as a handler.
+SYNOPSIS
+#include <stdlib.h>
+int atexit(void (*func)(void));
 
 
     

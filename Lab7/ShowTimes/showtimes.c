@@ -1,4 +1,3 @@
-
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,6 +5,7 @@
 #include <sys/times.h>
 #include <signal.h>
 #include <errno.h>
+#include <stdio.h>
 
 
 //these 2 need to be finalized yet.
@@ -31,16 +31,16 @@ static void handler(int signo)
 	{	
 
 		//TODO: WE ARE SUPPOSED TO DO THIS. BUT I DIDN'T GET THE DOUBLE -> STRING CONVERTER DONE
-		//DisplayTimeStats(tinfo.tms_utime/ticks, "  User time: ");
-		//DisplayTimeStats(tinfo.tms_stime/ticks, "  System time:   ");
-		//DisplayTimeStats(tinfo.tms_cutime/ticks, "  Children's user time:  ");
-		//DisplayTimeStats(tinfo.tms_cstime/ticks, "  Children's system time:   ");
+		DisplayTimeStats(tinfo.tms_utime/ticks, "  User time: ");
+		DisplayTimeStats(tinfo.tms_stime/ticks, "  System time:   ");
+		DisplayTimeStats(tinfo.tms_cutime/ticks, "  Children's user time:  ");
+		DisplayTimeStats(tinfo.tms_cstime/ticks, "  Children's system time:   ");
 
 
-		fprintf(stderr, "User time: %8.3f seconds\n", tinfo.tms_utime/ticks);
-		fprintf(stderr, "System time: %8.3f seconds\n", tinfo.tms_utime/ticks);
-		fprintf(stderr, "Children's user time: %8.3f seconds\n", tinfo.tms_utime/ticks);
-		fprintf(stderr, "Children's system time: %8.3f seconds\n", tinfo.tms_utime/ticks);
+		//fprintf(stderr, "User time: %8.3f seconds\n", tinfo.tms_utime/ticks);
+		//fprintf(stderr, "System time: %8.3f seconds\n", tinfo.tms_utime/ticks);
+		//fprintf(stderr, "Children's user time: %8.3f seconds\n", tinfo.tms_utime/ticks);
+		//fprintf(stderr, "Children's system time: %8.3f seconds\n", tinfo.tms_utime/ticks);
 	}
 }
 
@@ -98,47 +98,15 @@ int main(void) {
 //THE DOUBLETOSTR CONVERSION FUNCTION IS ALL THAT IS LEFT.
 static void DisplayTimeStats(double time, char* outbuf)
 {
-	//write(STDOUT_FILENO, outbuf, sizeof(outbuf));
-	//char mytime[5] = {'h','e','l','l','o'};
-	////DoubleToStr(time, mytime);
-	//write(STDOUT_FILENO, mytime, sizeof(mytime));
+	write(STDOUT_FILENO, outbuf, sizeof(outbuf));
+
+	char mytime[15];
+	//DoubleToStr(time, mytime);
+	//write(STDOUT_FILENO, mytime, 256);
 }
 
 static void DoubleToStr(const double dblNum, char* strDblNum)
 {
-	//double dbl = dblNum;
-	//bool negflg;
-	//// check if it's a negative number and set the flag if so
-	//if ( dbl < 0 ) 
-	//	dbl *= -1;
-	//negflg = true;
-
-	////store integer part in the string:
-
-	//int intNum = (int)dbl;    
-	//int intLen = (intNum == 0) ? 1 : IntLen(dbl); // if dbl num is as 0.xxxx
-
-	//inside loop:
-	//strDblNum[i] = (char)(intNum % 10 + '0');
-	//intNum /= 10;
-
-	//strDblNum[intLen] = '.';
-
-	////store decimal part in the string:    
-	//int dcount = intLen + 1;
-	//double decNum = dbl - (int)dbl; 
-
-	//Loop  <= EPS; EPS is floating point number precision
-	//	decNum *= 10;
-	//strDblNum[dcount] = (char)((int)decNum + '0');
-	//decNum = decNum - (int)decNum;
-
-
-	//strDblNum[dcount] = '\0';
-
-	//// handle negative numbers properly
-	//if ( negflg )
-	//	MakeNegativeStr(strDblNum, dcount);   
-
+	sprintf(strDblNum,"%8.3f",dblNum);
 }
 
