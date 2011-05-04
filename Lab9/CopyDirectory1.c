@@ -8,16 +8,16 @@
 #include "restart.h"
 #include "FileExplorer.h"
 
-int main (int argc, char *argv[]) 
+int main (int argc, char *argv[])
 {
 
-	if (argc != 3) 
+	if (argc != 3)
 	{
 		fprintf(stderr, "Usage: %s Source Destination\n", argv[0]);
 		return 1;
 	}
 	printf("Copying %s to %s...\n",argv[1],argv[2]);
-	CopyDirectory(argv[1],argv[2]);
+	CopyDirectory1(argv[1],argv[2]);
 
 	return 0;
 }

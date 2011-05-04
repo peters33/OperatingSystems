@@ -7,10 +7,10 @@
 #include <limits.h>
 #include <errno.h>
 
-void printdir(char*, int);
-int CopyDirectory(char*, char*); 
-int ShowDirectory(char*, int, int);
+
+int CopyDirectory1(char*, char*);
+int CopyDirectory2(char[2056][1024], char[2056][1024], int);
+int GetFilePathsAndCount(char*, char*, int*, char[2056][1024], char[2056][1024]);
 int IsDirectory(char*);
-int IsLink(char*);
 int IsFile(char*);
 void *copyfilepass(void *arg);

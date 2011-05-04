@@ -10,19 +10,14 @@
 #include <errno.h>
 #include "FileExplorer.h"
 #include "restart.h"
-#define PERMS (S_IRUSR | S_IWUSR | S_IXUSR  | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH )
+
+#define PERMS (S_IRUSR | S_IWUSR)
 #define FOLDERPERMS (S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
 #define READ_FLAGS O_RDONLY
 #define WRITE_FLAGS (O_WRONLY | O_CREAT | O_TRUNC)
 
+int CopyDirectory1(char *source, char *destination){
 
-void printdir(char *dir, int depth)
-{
-
-}
-
-int CopyDirectory(char *source, char *destination) 
-{
 	struct dirent* entry;
 	struct stat statbuf;
 	DIR* sourceDir;
@@ -33,143 +28,165 @@ int CopyDirectory(char *source, char *destination)
 	int size = 0;
 	int dirSize = 0;
 	int targs[3];
+	char sourceStr[1024];
+	char destStr[1024];
 
-	if ((sourceDir = opendir(source)) == NULL) 
+
+	if ((sourceDir = opendir(source)) == NULL)  //OPEN SOURCE DIRECTORY
 	{
-		perror("Failed to open directory");
+		perror("Failed to open source directory\n");
 		return 1;
 	}
 
-	if ((sourceDir = opendir(destination)) == NULL) 
+	if ((destinationDir = opendir(destination)) == NULL)    //TRY TO OPEN DESTINATION DIRECTORY
 	{
-		mkdir(destination, FOLDERPERMS);
-		if ((sourceDir = opendir(destination)) == NULL) 
+		mkdir(destination, FOLDERPERMS);    //IF IT FAILS TRY TO CREATE IT
+
+		if ((destinationDir = opendir(destination)) == NULL)    //TRY TO OPEN NEWLY CREATED DESTINATION DIRECTORY
 		{
-			perror("Failed to open directory GAY");
+			perror("Failed to open destination directory\n");
 			return 1;
 		}
 	}
-	while ((entry = readdir(sourceDir))) 
-	{ 									// iterate through each element in directory
-		
+
+	while ((entry = readdir(sourceDir)))    // ITERATE THROUGH EVERTYHING IN DIRECTORY
+	{
+
 		strcpy(chrdir, "");
-		strcat(chrdir, source); 											// construct full path to read element
-		strcat(chrdir, "/");
+		strcat(chrdir, source);             //CONSTRUCT CURRENT SOURCE ELEMENT
+		strcat(chrdir, "/");                //PATH RELATIVE TO ORIGINAL SOURCE
 		strcat(chrdir, entry->d_name);
-		printf("\t%s\n", chrdir);
-		strcpy(newDest, "");
-		strcat(newDest, destination); 											// construct full path to read element
+
+		strcpy(newDest, "");                //CONSTRUCT CURRENT DESTINATION ELEMENT
+		strcat(newDest, destination);       //PATH RELATIVE TO ORIGINAL DESTINATION
 		strcat(newDest, "/");
 		strcat(newDest, entry->d_name);
-		printf("\t%s\n", newDest );
 
-		if ((strcmp(entry->d_name, "..") == 0) || (strcmp(entry->d_name, ".") == 0)) 
-		{		
+
+		if ((strcmp(entry->d_name, "..") == 0) || (strcmp(entry->d_name, ".") == 0))    //SKIP PROCESSING IF "." OR ".."
+		{
 			continue;
 		}
-		printf("HERE\n");
-		if (IsDirectory(chrdir)) 
+
+		if (IsDirectory(chrdir))
 		{
-			dirSize = CopyDirectory(chrdir, newDest);				// element is a directory, goto next level first
-
-			stat(chrdir, &statbuf);
-			dirSize += (int)statbuf.st_size; 							// add size of cwd link to total
-
-			printf("%-10d", dirSize);
-			printf("\t%s\n", chrdir);
-
-			size += dirSize; 											// must add size of this dir to running total	
-		} 
-		else if (IsFile(chrdir)) 
+			CopyDirectory1(chrdir, newDest);	    //CURRENT ELEMENT IS A DIRECTORY SO RECURSIVELY CALL COPYDIRECTORY()
+		}
+		else        //CURRENT ELEMENT IS A FILE
 		{
-			if (IsLink(chrdir)) 
-			{								// handles the -L option
-				lstat(chrdir, &statbuf);
-			} 
-			else 
-			{
-				if (((targs[0] = open(chrdir, READ_FLAGS)) == -1) || (targs[1] = open(newDest, WRITE_FLAGS, PERMS)) == -1) 
-				{
-					perror("Failed to open the files");
-					return 1;
-				}
-				copyfilepass(targs);	//copy files
-			}
-
-			stat(chrdir, &statbuf);		
-			size += (int)statbuf.st_size;
-
-			printf("%-10d",(int)statbuf.st_size);
-			printf("\t%s\n", chrdir);
+            if (((targs[0] = r_open2(chrdir, READ_FLAGS)) == -1) || (targs[1] = r_open3(newDest, WRITE_FLAGS, PERMS)) == -1)    //TRY TO OPEN BOTH SOURCE AND DEST FILES
+            {
+                perror("Failed to open the files");
+                return 1;
+            }
+            if (copyfilepass(targs) == 0)       //COPY FILE
+            {
+                perror("Failed to copy the file");
+                return 1;
+            }
+            printf("Copied %s \nto \n%s\n\n", chrdir,newDest);
 		}
 	}
-	closedir(destination);
-	closedir(source);
-	return size;
+	closedir(destinationDir);
+	closedir(sourceDir);
+	return 1;
 }
 
-
-/* ShowDirectory - traverses a file directory and outputs accordingly
-* returns: size of ALL elements inside directory */
-int ShowDirectory(char *source, int aFlag,int lFlag) 
+int CopyDirectory2(char sourcePaths[2056][1024], char destPaths[2056][1024], int fileCount)
 {
+    int targs[3];
+    int i = 0;
+    while(i < fileCount)
+    {
+        if (((targs[0] = r_open2(sourcePaths[i], READ_FLAGS)) == -1) || (targs[1] = r_open3(destPaths[i], WRITE_FLAGS, PERMS)) == -1)    //TRY TO OPEN BOTH SOURCE AND DEST FILES
+        {
+            perror("Failed to open the files");
+            return 1;
+        }
+        if (copyfilepass(targs) == 0)       //COPY FILE
+        {
+            perror("Failed to copy the file");
+            return 1;
+        }
+        printf("Copied %s \nto \n%s\n\n", sourcePaths[i],destPaths[i]);
+        i++;
+    }
+}
+
+int GetFilePathsAndCount(char *source, char *destination, int *fileCount, char sourcePaths[2056][1024], char destPaths[2056][1024]){
+
 	struct dirent* entry;
 	struct stat statbuf;
-	DIR* dir;
+	DIR* sourceDir;
+	DIR* destinationDir;
 	char fullpath[1024];
 	char chrdir[1024];
+	char newDest[1024];
 	int size = 0;
 	int dirSize = 0;
+	int targs[3];
+	char sourceStr[1024];
+	char destStr[1024];
 
-	if ((dir = opendir(source)) == NULL) {
-		perror("Failed to open directory");
+	if ((sourceDir = opendir(source)) == NULL)  //OPEN SOURCE DIRECTORY
+	{
+		perror("Failed to open source directory\n");
 		return 1;
 	}
 
-	while ((entry = readdir(dir))) { 									// iterate through each element in directory
-		strcpy(chrdir, "");
-		strcat(chrdir, source); 											// construct full path to read element
-		strcat(chrdir, "/");
-		strcat(chrdir, entry->d_name);
+	if ((destinationDir = opendir(destination)) == NULL)    //TRY TO OPEN DESTINATION DIRECTORY
+	{
+		mkdir(destination, FOLDERPERMS);    //IF IT FAILS TRY TO CREATE IT
 
-		if ((strcmp(entry->d_name, "..") == 0) || (strcmp(entry->d_name, ".") == 0)) {
-			continue;
-		}
-
-		if (IsDirectory(chrdir)) {
-			dirSize = ShowDirectory(chrdir, aFlag, lFlag);				// element is a directory, goto next level first
-
-			stat(chrdir, &statbuf);
-			dirSize += (int)statbuf.st_size; 							// add size of cwd link to total
-
-			printf("%-10d", dirSize);
-			printf("\t%s\n", chrdir);
-
-			size += dirSize; 											// must add size of this dir to running total	
-		} else if (IsFile(chrdir)) {
-
-			if (IsLink(chrdir) && !lFlag) {								// handles the -L option
-				lstat(chrdir, &statbuf);
-			} else {
-				stat(chrdir, &statbuf);									
-			}
-
-			size += (int)statbuf.st_size;
-
-			if (aFlag) { 												// handles the -a option
-				printf("%-10d",(int)statbuf.st_size);
-				printf("\t%s\n", chrdir);
-			}
+		if ((destinationDir = opendir(destination)) == NULL)    //TRY TO OPEN NEWLY CREATED DESTINATION DIRECTORY
+		{
+			perror("Failed to open destination directory\n");
+			return 1;
 		}
 	}
 
-	closedir(dir);
-	return size;
+	while ((entry = readdir(sourceDir)))    // ITERATE THROUGH EVERTYHING IN DIRECTORY
+	{
+
+		strcpy(chrdir, "");
+		strcat(chrdir, source);             //CONSTRUCT CURRENT SOURCE ELEMENT
+		strcat(chrdir, "/");                //PATH RELATIVE TO ORIGINAL SOURCE
+		strcat(chrdir, entry->d_name);
+
+		strcpy(newDest, "");                //CONSTRUCT CURRENT DESTINATION ELEMENT
+		strcat(newDest, destination);       //PATH RELATIVE TO ORIGINAL DESTINATION
+		strcat(newDest, "/");
+		strcat(newDest, entry->d_name);
+
+
+		if ((strcmp(entry->d_name, "..") == 0) || (strcmp(entry->d_name, ".") == 0))    //SKIP PROCESSING IF "." OR ".."
+		{
+			continue;
+		}
+
+		if (IsDirectory(chrdir))
+		{
+			GetFilePathsAndCount(chrdir, newDest, fileCount, sourcePaths, destPaths);	    //CURRENT ELEMENT IS A DIRECTORY SO RECURSIVELY CALL COPYDIRECTORY()
+		}
+		else        //CURRENT ELEMENT IS A FILE
+		{
+		    //TODO: ADD FILES TO **files
+            strcpy(sourcePaths[*fileCount],"");
+            strcat(sourcePaths[*fileCount],chrdir);
+            strcpy(destPaths[*fileCount],"");
+            strcat(destPaths[*fileCount],newDest);
+		    //strcat(sourcePaths[0],newDest);
+            *fileCount = *fileCount + 1;
+		}
+	}
+	closedir(destinationDir);
+	closedir(sourceDir);
+	return 1;
 }
+
 
 /* IsDirectory - determines if a filepath is a directory */
 int IsDirectory(char *path) {
-	printf("HERE\n");
 	struct stat statbuf;
 
 	if (stat(path, &statbuf) == -1) {
@@ -179,21 +196,10 @@ int IsDirectory(char *path) {
 	}
 }
 
-/* IsLink - determines if a filepath is a symbolic link */
-int IsLink(char *path) {
-	struct stat statbuf;
-
-	if (lstat(path, &statbuf) == -1) {
-		return 0;
-	} else {
-		return S_ISLNK(statbuf.st_mode);
-	}
-}
-
 /* IsFile - determines if a filepath is a file */
 int IsFile(char *path) {
 	struct stat statbuf;
-
+    int fd;
 	if (fstat(open(path,O_RDONLY), &statbuf) == -1) {
 		return 0;
 	} else {
@@ -201,12 +207,13 @@ int IsFile(char *path) {
 	}
 }
 
-void *copyfilepass(void *arg)
-{
+
+void *copyfilepass(void *arg){
 	int *argint;
 	argint = (int *)arg;
 	argint[2] = copyfile(argint[0], argint[1]);
-	r_close(argint[0]);
-	r_close(argint[1]);
+    r_close(argint[0]);
+    r_close(argint[1]);
+
 	return argint + 2;
 }
