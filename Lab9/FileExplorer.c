@@ -25,12 +25,8 @@ int CopyDirectory1(char *source, char *destination){
 	char fullpath[1024];
 	char chrdir[1024];
 	char newDest[1024];
-	int size = 0;
-	int dirSize = 0;
-	int targs[3];
 	char sourceStr[1024];
 	char destStr[1024];
-
 
 	if ((sourceDir = opendir(source)) == NULL)  //OPEN SOURCE DIRECTORY
 	{
@@ -74,43 +70,28 @@ int CopyDirectory1(char *source, char *destination){
 		}
 		else        //CURRENT ELEMENT IS A FILE
 		{
-            if (((targs[0] = r_open2(chrdir, READ_FLAGS)) == -1) || (targs[1] = r_open3(newDest, WRITE_FLAGS, PERMS)) == -1)    //TRY TO OPEN BOTH SOURCE AND DEST FILES
-            {
-                perror("Failed to open the files");
-                return 1;
-            }
-            if (copyfilepass(targs) == 0)       //COPY FILE
-            {
-                perror("Failed to copy the file");
-                return 1;
-            }
-            printf("Copied %s \nto \n%s\n\n", chrdir,newDest);
+		    CopyFile(chrdir,newDest);
 		}
 	}
+
 	closedir(destinationDir);
 	closedir(sourceDir);
 	return 1;
 }
 
-int CopyDirectory2(char sourcePaths[2056][1024], char destPaths[2056][1024], int fileCount)
-{
-    int targs[3];
-    int i = 0;
-    while(i < fileCount)
-    {
-        if (((targs[0] = r_open2(sourcePaths[i], READ_FLAGS)) == -1) || (targs[1] = r_open3(destPaths[i], WRITE_FLAGS, PERMS)) == -1)    //TRY TO OPEN BOTH SOURCE AND DEST FILES
-        {
-            perror("Failed to open the files");
-            return 1;
-        }
-        if (copyfilepass(targs) == 0)       //COPY FILE
-        {
-            perror("Failed to copy the file");
-            return 1;
-        }
-        printf("Copied %s \nto \n%s\n\n", sourcePaths[i],destPaths[i]);
-        i++;
-    }
+int CopyFile( char sourcePath[1024], char destPath[1024] ){
+	int targs[3];
+	if (((targs[0] = open(sourcePath, READ_FLAGS)) == -1) || (targs[1] = open(destPath, WRITE_FLAGS, PERMS)) == -1)    //TRY TO OPEN BOTH SOURCE AND DEST FILES
+	{
+		perror("Failed to open the files");
+		return 1;
+	}
+	if (copyfilepass(targs) == 0)       //COPY FILE
+	{
+		perror("Failed to copy the file");
+		return 1;
+	}
+	fprintf(stderr,"Copied %s \nto \n%s\n\n", sourcePath,destPath);
 }
 
 int GetFilePathsAndCount(char *source, char *destination, int *fileCount, char sourcePaths[2056][1024], char destPaths[2056][1024]){
@@ -184,7 +165,6 @@ int GetFilePathsAndCount(char *source, char *destination, int *fileCount, char s
 	return 1;
 }
 
-
 /* IsDirectory - determines if a filepath is a directory */
 int IsDirectory(char *path) {
 	struct stat statbuf;
@@ -206,7 +186,6 @@ int IsFile(char *path) {
 		return S_ISREG(statbuf.st_mode);
 	}
 }
-
 
 void *copyfilepass(void *arg){
 	int *argint;
