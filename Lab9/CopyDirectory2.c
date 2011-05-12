@@ -21,6 +21,7 @@ int main (int argc, char *argv[])
 	}
 	printf("Copying %s to %s...\n",argv[1],argv[2]);
 
+    //TODO: CHANGE TO CHAR *[1024]
 	char destFiles[2056][1024];
 	char sourceFiles[2056][1024];
 	int numFiles = 0;
@@ -71,7 +72,6 @@ int main (int argc, char *argv[])
 	}
 	//TODO: Wait for the rest of the children to finish
 	while(wait(NULL) > 0) ;
-
     printf("Number of files: %i",numFiles);
 
 	return 0;

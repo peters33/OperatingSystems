@@ -11,6 +11,8 @@
 int CopyDirectory1(char*, char*);
 int CopyFile( char sourcePath[1024], char destPath[1024] );
 int GetFilePathsAndCount(char*, char*, int*, char[2056][1024], char[2056][1024]);
+int GetFilePathsAndCount4(char*, char*, int*, char*[2056], char*[2056]);
 int IsDirectory(char*);
 int IsFile(char*);
 void *copyfilepass(void *arg);
+
