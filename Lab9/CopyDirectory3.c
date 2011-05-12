@@ -35,9 +35,8 @@ void *CopyDirectory3(void *threadargs)
     //srcPaths = my_data->sourcePaths;
     //destPaths = my_data->destinationPaths;
 
-    int localCount = 0;
-
-    getCountThenIncrement(&localCount);
+	int localCount = 0;
+	getCountThenIncrement(&localCount);
 
     while (localCount < ttlFiles)
     {
@@ -54,7 +53,7 @@ int main (int argc, char *argv[])
 		fprintf(stderr, "Usage: %s Source Destination\n", argv[0]);
 		return 1;
 	}
-	printf("Copying %s to %s...\n",argv[1],argv[2]);
+	printf("\nCopying %s to %s...\n",argv[1],argv[2]);
 
     //TODO: CHANGE TO CHAR *[1024]
 

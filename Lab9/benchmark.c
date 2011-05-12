@@ -47,7 +47,7 @@ int main(void) {
 	}
 
 	int processCount = 0;
-	int processMax = 2;
+	int processMax = 3;
 
 	for (processCount=0;processCount<processMax;processCount++)
 	{
@@ -66,7 +66,7 @@ int main(void) {
 					system("./copy1 root_dir copydir1");
 				}
 
-				fprintf(stderr, "\n\n  CopyDirectory1 process %ld stats follow:\n", (long)getpid());
+				fprintf(stderr, "\n\n  CopyDirectory1 process %ld stats follow:", (long)getpid());
 				if ( kill(getpid(), SIGUSR1) == -1 )
 				{
 					perror("Failed to send the SIGUSR1 signal.");
@@ -77,10 +77,24 @@ int main(void) {
 				int t = 0;
 				for (t=0;t<20;t++)
 				{
+					system("./copy2 root_dir copydir2");
+				}
+
+				fprintf(stderr, "\n\n  CopyDirectory2 process %ld stats follow:", (long)getpid());
+				if ( kill(getpid(), SIGUSR1) == -1 )
+				{
+					perror("Failed to send the SIGUSR1 signal.");
+				}
+			}
+			if (processCount == 2)
+			{
+				int t = 0;
+				for (t=0;t<20;t++)
+				{
 					system("./copy3 root_dir copydir3");
 				}
 
-				fprintf(stderr, "\n\n  CopyDirectory3 process %ld stats follow:\n", (long)getpid());
+				fprintf(stderr, "\n\n  CopyDirectory3 process %ld stats follow:", (long)getpid());
 				if ( kill(getpid(), SIGUSR1) == -1 )
 				{
 					perror("Failed to send the SIGUSR1 signal.");

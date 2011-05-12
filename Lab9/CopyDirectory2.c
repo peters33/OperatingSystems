@@ -11,7 +11,58 @@
 #include "restart.h"
 #include "FileExplorer.h"
 
+
 int main (int argc, char *argv[])
+{
+
+	if (argc != 3)
+	{
+		fprintf(stderr, "Usage: %s Source Destination\n", argv[0]);
+		return 1;
+	}
+	printf("Copying %s to %s...\n",argv[1],argv[2]);
+
+    //TODO: CHANGE TO CHAR *[1024]
+	char destFiles[2056][1024];
+	char sourceFiles[2056][1024];
+	int numFiles = 0;
+	int curCount = 0;
+
+	GetFilePathsAndCount(argv[1],argv[2], &numFiles, sourceFiles, destFiles);
+    //CopyDirectory2(sourceFiles, destFiles, numFiles, &curCount);
+
+    int pr_count = 0;
+	int pr_limit = 5;
+	pid_t childpid = 0;
+	int localCount = 0;
+
+	for (pr_count = 0; pr_count<pr_limit;pr_count++)
+	{
+        if ((childpid = fork()) == -1)
+		{
+			fprintf(stderr, "[%ld]:failed to create child process: %s\n",(long)getpid(), strerror(errno));
+			return 1;
+		}
+
+		if(childpid == 0)
+		{
+            getCountThenIncrement(&localCount);
+            while (localCount < numFiles)
+            {
+                CopyFile(sourceFiles[localCount],destFiles[localCount]);
+                getCountThenIncrement(&localCount);
+            }
+		    break;
+		}
+		else
+		{
+		    while ( wait(NULL) > 0 ) ;
+		}
+	}
+	return 0;
+}
+
+int main2 (int argc, char *argv[])
 {
 
 	if (argc != 3)
